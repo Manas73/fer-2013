@@ -5,6 +5,7 @@ import numpy as np
 from model import FacialExpressionModel
 import pandas as pd
 import plotly.graph_objs as go
+import time
 
 
 @st.cache
