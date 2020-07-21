@@ -4,7 +4,7 @@ numpy == 1.19.0
 scipy == 1.4.1
 pillow
 matplotlib
-opencv-python
 streamlit
+opencv-contrib-python-headless
 tensorflow-addons
 tensorflow == 2.0.1
