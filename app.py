@@ -105,18 +105,24 @@ def main():
 
         elif media_type == media_options[1]:
 
-            webcam = cv2.VideoCapture(0)
-            start_webcam = True
-            while start_webcam:
-                (_, im) = webcam.read()
-                if im is not None:
-                    our_image = Image.fromarray(im)
-                    result_img, result_faces = get_frame(our_image)
-                    st.image(result_img)
-                    if cv2.waitKey(1) & 0xFF == ord("q"):
+            if st.button("Start"):
+                video = cv2.VideoCapture(0)
+                video.set(cv2.CAP_PROP_FPS, 25)
+
+                image_placeholder = st.empty()
+
+                while True:
+                    success, image = video.read()
+                    if not success:
                         break
-            webcam.release()
-            cv2.destroyAllWindows()
+                    if image is not None:
+                        our_image = Image.fromarray(im)
+                        result_img, result_faces = get_frame(our_image)
+                        image_placeholder.image(result_img)
+                        time.sleep(0.01)
+
+                video.release()
+                cv2.destroyAllWindows()
 
     st.write(
         """
