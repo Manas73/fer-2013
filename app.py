@@ -3,6 +3,8 @@ import cv2
 from PIL import Image
 import numpy as np
 from model import FacialExpressionModel
+import pandas as pd
+import plotly.graph_objs as go
 
 
 @st.cache
@@ -13,6 +15,15 @@ def load_image(img):
 
 facec = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 font = cv2.FONT_HERSHEY_SIMPLEX
+emotions = [
+    "Angry",
+    "Disgust",
+    "Fear",
+    "Happy",
+    "Neutral",
+    "Sad",
+    "Surprised",
+]
 
 
 def get_frame(our_image):
@@ -26,13 +37,13 @@ def get_frame(our_image):
         fc = gray_fr[y : y + h, x : x + w]
 
         roi = cv2.resize(fc, (48, 48))
-        pred = model.predict_emotion(roi[np.newaxis, :, :, np.newaxis])
+        pred, probs = model.predict_emotion(roi[np.newaxis, :, :, np.newaxis])
 
         cv2.putText(new_image, pred, (x, y), font, 1, (255, 255, 0), 2)
         cv2.rectangle(new_image, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
     # _, jpeg = cv2.imencode('.jpg', fr)
-    return new_image, faces
+    return new_image, faces, probs
 
 
 def main():
@@ -60,7 +71,7 @@ def main():
         "Detect Facial Expression",
     ]
     choice = st.sidebar.selectbox("Select an activity", activities)
-    media_options = ["Upload an Image"]  # "Use your Webcam"
+    media_options = ["Upload an Image", "Use your Webcam"]  # "Use your Webcam"
     media_type = st.sidebar.radio("Media Options", media_options)
 
     if choice == activities[0]:
@@ -74,23 +85,38 @@ def main():
                 placeholder.image(our_image)
 
             if st.button("Process"):
-                result_img, result_faces = get_frame(our_image)
+                result_img, result_faces, probs = get_frame(our_image)
                 placeholder.image(result_img)
+                probability = pd.DataFrame(probs, columns=emotions).transpose()
+                # st.write(probability)
+                fig = go.Figure([go.Bar(x=emotions, y=probability[0])])
+                fig.update_layout(
+                    title={
+                        "text": "Probability of each Expression",
+                        "y": 0.9,
+                        "x": 0.5,
+                        "xanchor": "center",
+                        "yanchor": "top",
+                    },
+                    xaxis_title="Expression",
+                    yaxis_title="Probability",
+                )
+                st.write(fig)
 
-        # elif media_type == media_options[1]:
-        #
-        #     webcam = cv2.VideoCapture(0)
-        #     start_webcam = True
-        #     while start_webcam:
-        #         (_, im) = webcam.read()
-        #         if im is not None:
-        #             our_image = Image.fromarray(im)
-        #             result_img, result_faces = get_frame(our_image)
-        #             st.image(result_img)
-        #             if cv2.waitKey(1) & 0xFF == ord("q"):
-        #                 break
-        #     webcam.release()
-        #     cv2.destroyAllWindows()
+        elif media_type == media_options[1]:
+
+            webcam = cv2.VideoCapture(0)
+            start_webcam = True
+            while start_webcam:
+                (_, im) = webcam.read()
+                if im is not None:
+                    our_image = Image.fromarray(im)
+                    result_img, result_faces = get_frame(our_image)
+                    st.image(result_img)
+                    if cv2.waitKey(1) & 0xFF == ord("q"):
+                        break
+            webcam.release()
+            cv2.destroyAllWindows()
 
     st.write(
         """
