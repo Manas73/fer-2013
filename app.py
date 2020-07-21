@@ -72,57 +72,33 @@ def main():
         "Detect Facial Expression",
     ]
     choice = st.sidebar.selectbox("Select an activity", activities)
-    media_options = ["Upload an Image", "Use your Webcam"]  # "Use your Webcam"
-    media_type = st.sidebar.radio("Media Options", media_options)
-
     if choice == activities[0]:
-        if media_type == media_options[0]:
-            image_file = st.file_uploader(
-                "Upload Image", type=["jpg", "png", "jpeg"]
+        image_file = st.file_uploader(
+            "Upload Image", type=["jpg", "png", "jpeg"]
+        )
+        if image_file is not None:
+            our_image = Image.open(image_file)
+            placeholder = st.empty()
+            placeholder.image(our_image)
+
+        if st.button("Process"):
+            result_img, result_faces, probs = get_frame(our_image)
+            placeholder.image(result_img)
+            probability = pd.DataFrame(probs, columns=emotions).transpose()
+            # st.write(probability)
+            fig = go.Figure([go.Bar(x=emotions, y=probability[0])])
+            fig.update_layout(
+                title={
+                    "text": "Probability of each Expression",
+                    "y": 0.9,
+                    "x": 0.5,
+                    "xanchor": "center",
+                    "yanchor": "top",
+                },
+                xaxis_title="Expression",
+                yaxis_title="Probability",
             )
-            if image_file is not None:
-                our_image = Image.open(image_file)
-                placeholder = st.empty()
-                placeholder.image(our_image)
-
-            if st.button("Process"):
-                result_img, result_faces, probs = get_frame(our_image)
-                placeholder.image(result_img)
-                probability = pd.DataFrame(probs, columns=emotions).transpose()
-                # st.write(probability)
-                fig = go.Figure([go.Bar(x=emotions, y=probability[0])])
-                fig.update_layout(
-                    title={
-                        "text": "Probability of each Expression",
-                        "y": 0.9,
-                        "x": 0.5,
-                        "xanchor": "center",
-                        "yanchor": "top",
-                    },
-                    xaxis_title="Expression",
-                    yaxis_title="Probability",
-                )
-                st.write(fig)
-
-        elif media_type == media_options[1]:
-
-            if st.button("Start"):
-                video = cv2.VideoCapture(0)
-                video.set(cv2.CAP_PROP_FPS, 25)
-
-                image_placeholder = st.empty()
-
-                while True:
-                    success, image = video.read()
-                    if not success:
-                        break
-                    if image is not None:
-                        our_image = Image.fromarray(im)
-                        result_img, result_faces = get_frame(our_image)
-                        image_placeholder.image(result_img)
-                        time.sleep(0.01)
-
-                video.release()
+            st.write(fig)
 
     st.write(
         """
