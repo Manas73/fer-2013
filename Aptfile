@@ -1,1 +1,3 @@
 libgcc1
+libgcc1-dbg
+gcc-multilib
