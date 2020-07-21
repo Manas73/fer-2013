@@ -60,7 +60,7 @@ def main():
         "Detect Facial Expression",
     ]
     choice = st.sidebar.selectbox("Select an activity", activities)
-    media_options = ["Upload an Image", "Use your Webcam"]
+    media_options = ["Upload an Image"]  # "Use your Webcam"
     media_type = st.sidebar.radio("Media Options", media_options)
 
     if choice == activities[0]:
@@ -77,20 +77,20 @@ def main():
                 result_img, result_faces = get_frame(our_image)
                 placeholder.image(result_img)
 
-        elif media_type == media_options[1]:
-
-            webcam = cv2.VideoCapture(0)
-            start_webcam = True
-            while start_webcam:
-                (_, im) = webcam.read()
-                if im is not None:
-                    our_image = Image.fromarray(im)
-                    result_img, result_faces = get_frame(our_image)
-                    st.image(result_img)
-                    if cv2.waitKey(1) & 0xFF == ord("q"):
-                        break
-            webcam.release()
-            cv2.destroyAllWindows()
+        # elif media_type == media_options[1]:
+        #
+        #     webcam = cv2.VideoCapture(0)
+        #     start_webcam = True
+        #     while start_webcam:
+        #         (_, im) = webcam.read()
+        #         if im is not None:
+        #             our_image = Image.fromarray(im)
+        #             result_img, result_faces = get_frame(our_image)
+        #             st.image(result_img)
+        #             if cv2.waitKey(1) & 0xFF == ord("q"):
+        #                 break
+        #     webcam.release()
+        #     cv2.destroyAllWindows()
 
     st.write(
         """
