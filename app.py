@@ -123,7 +123,6 @@ def main():
                         time.sleep(0.01)
 
                 video.release()
-                cv2.destroyAllWindows()
 
     st.write(
         """
