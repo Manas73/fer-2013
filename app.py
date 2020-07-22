@@ -50,21 +50,20 @@ def get_frame(our_image):
 def main():
     """Facial Expression Detection"""
 
-    st.title("Facial Expression Detection App")
-    st.subheader("Facial Expression Detector")
+    st.title("Facial Expression Detection :sunglasses:")
     st.write(
         """
     ## **Inspiration** \n
     Goodfellow, I.J., et.al. (2013). Challenged in representation learning: A report of three machine learning contests. Neural Networks, 64, 59-63. doi:10.1016/j.neunet.2014.09.005
 
     This project used the FER-2013 dataset which consisted of 48x48 pixel grayscale images of faces. The model will classify each facial expression into one of seven categories: \n
-    1. Angry \n
-    2. Disgust \n
-    3. Fear \n
-    4. Happy \n
-    5. Sad \n
-    6. Surprise \n
-    7. Neutral \n
+    1. Angry :rage:\n
+    2. Disgust :confounded:\n
+    3. Fear :fearful:\n
+    4. Happy :grin:\n
+    5. Sad :pensive:\n
+    6. Surprise :astonished:\n
+    7. Neutral :neutral_face:\n
     The training set consists of 28,709 examples and the public test set consists of 3,589 examples.
     """
     )
@@ -72,6 +71,10 @@ def main():
         "Detect Facial Expression",
     ]
     choice = st.sidebar.selectbox("Select an activity", activities)
+    st.sidebar.markdown("**Developed by -** Manas Sambare")
+    st.sidebar.markdown("**[GitHub Repo](https://github.com/Manas73/fer-2013) - "
+                        "[Kaggle Project](https://www.kaggle.com/msambare/facial-expression-detection) - "
+                        "[LinkedIn](https://www.linkedin.com/in/manas-sambare)**")
     if choice == activities[0]:
         image_file = st.file_uploader(
             "Upload Image", type=["jpg", "png", "jpeg"]
@@ -98,15 +101,18 @@ def main():
                 xaxis_title="Expression",
                 yaxis_title="Probability",
             )
-            st.write(fig)
+            st.plotly_chart(fig, use_container_width=True)
 
-    st.write(
+
+    st.markdown(
         """
     ## **Methodology** \n
-    The model was built using Tensorflow for the classification of facial expressions. Once an image of a person is uploaded or input from the webcam is passed, the faces are detected using OpenCV, and the application then classifies the facial expression.
+    The model was built using Tensorflow for the classification of facial expressions.
+    Once an image of a person is uploaded or input from the webcam is passed, the faces are detected using OpenCV, and the application then classifies the facial expression.
 
     ## **Results** \n
-    The Facial Expression classifier has an accuracy of 65.1% which among the best for this particular dataset. For context, the human classification accuracy for the dataset was 65 ± 5%.
+    The Facial Expression classifier has an accuracy of 65.1% which is among the best for this particular dataset.
+    For context, the human classification accuracy for the dataset was 65 ± 5%.
 
     """
     )
