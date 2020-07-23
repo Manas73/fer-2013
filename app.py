@@ -33,7 +33,6 @@ def get_frame(our_image):
     new_image = cv2.cvtColor(image, 1)
     gray_fr = cv2.cvtColor(new_image, cv2.COLOR_BGR2GRAY)
     faces = facec.detectMultiScale(gray_fr, 1.3, 5)
-
     for (x, y, w, h) in faces:
         fc = gray_fr[y : y + h, x : x + w]
 
@@ -42,7 +41,8 @@ def get_frame(our_image):
 
         cv2.putText(new_image, pred, (x, y), font, 1, (255, 255, 0), 2)
         cv2.rectangle(new_image, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
+    if len(faces) == 0:
+        probs = []
     # _, jpeg = cv2.imencode('.jpg', fr)
     return new_image, faces, probs
 
@@ -86,22 +86,27 @@ def main():
 
         if st.button("Process"):
             result_img, result_faces, probs = get_frame(our_image)
-            placeholder.image(result_img)
-            probability = pd.DataFrame(probs, columns=emotions).transpose()
-            # st.write(probability)
-            fig = go.Figure([go.Bar(x=emotions, y=probability[0])])
-            fig.update_layout(
-                title={
-                    "text": "Probability of each Expression",
-                    "y": 0.9,
-                    "x": 0.5,
-                    "xanchor": "center",
-                    "yanchor": "top",
-                },
-                xaxis_title="Expression",
-                yaxis_title="Probability",
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            if len(probs) > 0:
+                placeholder.image(result_img)
+                probability = pd.DataFrame(probs, columns=emotions).transpose()
+                # st.write(probability)
+                fig = go.Figure([go.Bar(x=emotions, y=probability[0])])
+                fig.update_layout(
+                    title={
+                        "text": "Probability of each Expression",
+                        "y": 0.9,
+                        "x": 0.5,
+                        "xanchor": "center",
+                        "yanchor": "top",
+                    },
+                    xaxis_title="Expression",
+                    yaxis_title="Probability",
+                )
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                placeholder.markdown("## No face found... Try again with another image")
+
+
 
 
     st.markdown(
